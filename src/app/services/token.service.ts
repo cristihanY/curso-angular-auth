@@ -43,6 +43,36 @@ removeToken(){
     }
 }
 
+isValidToken(){
+  const token = this.getToken();
+  const helper = new JwtHelperService();
+  if(!token){
+      return false;
+  }
+  const decodetoken = helper.decodeToken(token);
+  if(decodetoken && decodetoken?.exp){
+    const tokendate = new Date(0);
+    tokendate.setUTCSeconds(decodetoken.exp);
+    const today = new Date();
+    return tokendate.getTime() > today.getTime();
+  }
+  return false;
+}
+isValidRefreshToken(){
+  const token = this.getRefreshToken();
+  const helper = new JwtHelperService();
+  if(!token){
+      return false;
+  }
+  const decodetoken = helper.decodeToken(token);
+  if(decodetoken && decodetoken?.exp){
+    const tokendate = new Date(0);
+    tokendate.setUTCSeconds(decodetoken.exp);
+    const today = new Date();
+    return tokendate.getTime() > today.getTime();
+  }
+  return false;
+}
 //  saveToken(token:string){
 //    localStorage.setItem('token', token);
 
@@ -55,4 +85,18 @@ removeToken(){
 //  removeToken(){
 //    localStorage.removeItem('token');
 //  }
+
+// refresh token 
+
+saveRefreshToken(token:string){
+  setCookie('refresh-token-trello', token, {expires: 365, path: '/'})
+  }
+
+getRefreshToken(){
+    const token = getCookie('refresh-token-trello');
+    return token;
+}
+removeRefreshToken(){
+ removeCookie('refresh-token-trello');
+}
 }

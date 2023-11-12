@@ -24,9 +24,20 @@ export class AuthService {
       })
       .pipe(
         tap(response => {
-          this.tokenService.saveToken( response.access_token)
+          this.tokenService.saveToken( response.access_token);
+          this.tokenService.saveRefreshToken(response.refresh_token);
         })
-      )
+      );
+  }
+
+  refresLogin(refreshToken: string){
+    return this.http.post<ResponseLogin>(`${this.apiUrl}/api/v1/auth/refresh-token`, {refreshToken})
+    .pipe(
+      tap(response => {
+        this.tokenService.saveToken( response.access_token);
+        this.tokenService.saveRefreshToken(response.refresh_token);
+      })
+    );
   }
 
   register(name: string, email: string, password: string){
@@ -58,5 +69,6 @@ export class AuthService {
 
   logout(){
     this.tokenService.removeToken();
+    this.tokenService.removeRefreshToken();
   }
 }
